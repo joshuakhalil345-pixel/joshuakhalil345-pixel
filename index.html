@@ -1,0 +1,320 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Flowers & Hearts — Standalone</title>
+    <style>
+/* --- inlined styles from src/styles.css --- */
+:root{--bg:#070617;--pink:#ff6ea6;--soft-pink:#ff9acb;--leaf:#2aa85a;--glow:0 0 18px rgba(255,110,166,0.25)}
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font-family:Inter,system-ui,Segoe UI,Arial}
+.scene{position:relative;height:100vh;overflow:hidden}
+
+/* Stars */
+.stars{position:absolute;inset:0;pointer-events:none}
+.star{position:absolute;width:3px;height:3px;border-radius:50%;background:#ffd88a;filter:blur(0.6px);animation:twinkle 3s infinite alternate}
+@keyframes twinkle{from{opacity:0.2;transform:scale(0.6)}to{opacity:1;transform:scale(1.3)}}
+
+/* Hearts */
+.hearts{position:absolute;inset:0;pointer-events:none}
+.heart{position:absolute;bottom:12%;background:linear-gradient(180deg,var(--soft-pink),var(--pink));transform:rotate(-45deg);border-radius:20px 20px 0 0;box-shadow:var(--glow);animation:floatUp linear forwards;will-change:transform,opacity}
+.heart:before,.heart:after{content:'';position:absolute;background:inherit;border-radius:50%}
+.heart:before{width:100%;height:100%;top:-50%;left:0}
+.heart:after{width:100%;height:100%;left:50%;top:0}
+@keyframes floatUp{0%{transform:translateY(0) rotate(var(--r, -45deg));opacity:1}40%{transform:translateY(-80px) rotate(var(--r, -45deg)) scale(1.05)}100%{transform:translateY(-240px) rotate(var(--r, -45deg));opacity:0}}
+
+/* Ring (circle with small heart inside) */
+.ring{position:absolute;bottom:20%;width:86px;height:86px;border-radius:50%;border:4px solid rgba(255,140,170,0.18);box-shadow:0 0 28px rgba(255,110,166,0.08);animation:riseRing linear forwards;display:flex;align-items:center;justify-content:center}
+.ring-heart{width:20px;height:20px;background:linear-gradient(180deg,var(--soft-pink),var(--pink));transform:rotate(-45deg);border-radius:20px 20px 0 0;position:relative;box-shadow:var(--glow)}
+@keyframes riseRing{0%{transform:translateY(0) scale(0.9);opacity:1}80%{opacity:1}100%{transform:translateY(-220px) scale(1.05);opacity:0}}
+
+/* Field area */
+.field{position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 50% at 50% 38%, rgba(255,255,255,0.02), transparent 15%, rgba(0,0,0,0.55));mix-blend-mode:multiply}
+.field .groundGlow{position:absolute;left:0;right:0;bottom:32%;height:18%;background:radial-gradient(50% 40% at 50% 100%, rgba(255,130,170,0.03), transparent 60%)}
+.grass{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(0deg,#0b2a10 0%, transparent 60%);box-shadow:inset 0 6px 20px rgba(0,0,0,0.6)}
+
+/* Flower */
+.flower{position:absolute;bottom:18%;width:120px;height:180px;display:flex;align-items:flex-end;flex-direction:column;transform-origin:center bottom;animation:sway 4s ease-in-out infinite}
+.flower .stem{width:6px;height:86px;background:linear-gradient(180deg,#2f8a3b,#174b20);margin:0 auto;border-radius:6px;box-shadow:inset 0 4px 8px rgba(0,0,0,0.3)}
+.foliage{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);width:220px;height:120px;pointer-events:none}
+.leaf{position:absolute;border-radius:40px;background:linear-gradient(180deg,#1f7a38,#0f5024);box-shadow:inset 0 -8px 22px rgba(0,0,0,0.45)}
+.leaf.big{width:92px;height:86px;bottom:6px}
+.leaf.med{width:64px;height:58px;bottom:18px}
+.leaf.sm{width:46px;height:40px;bottom:28px}
+.leaf.l1{left:6%;transform:rotate(-14deg)}
+.leaf.l2{right:6%;transform:rotate(16deg)}
+.leaf.l3{left:26%;transform:rotate(-6deg)}
+.leaf.l4{right:24%;transform:rotate(8deg)}
+.leaf.l5{left:48%;transform:rotate(2deg)}
+.bloom{position:absolute;bottom:86px;left:50%;transform:translateX(-50%);width:140px;height:120px;display:grid;place-items:center}
+.petal{position:absolute;width:56px;height:72px;background:linear-gradient(180deg,var(--pink),#ff4b9a);border-radius:50%;box-shadow:0 6px 40px rgba(255,110,166,0.18);opacity:0.98;mix-blend-mode:screen}
+.petal.p1{transform:translate(-16px,-8px) rotate(-4deg)}
+.petal.p2{transform:translate(18px,-8px) rotate(6deg)}
+.petal.p3{transform:translate(4px,18px) rotate(40deg)}
+.petal.p4{transform:translate(4px,18px) rotate(-40deg)}
+.center{width:34px;height:34px;background:radial-gradient(circle at 35% 35%, #fff2b8, #ffd77a 40%, #ffc65a 100%);border-radius:50%;box-shadow:0 0 26px rgba(255,200,120,0.14)}
+
+.bloom, .petal, .center{transition:transform 200ms ease}
+@keyframes sway{0%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}100%{transform:rotate(-3deg)}}
+
+/* small grass blades */
+.grass:after{content:'';position:absolute;left:6%;bottom:8px;width:6px;height:120px;background:linear-gradient(180deg,#0b6b2b,#083815);border-radius:6px;transform:rotate(-8deg);box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+.grass:before{content:'';position:absolute;right:8%;bottom:12px;width:6px;height:140px;background:linear-gradient(180deg,#0b6b2b,#083815);border-radius:6px;transform:rotate(12deg);box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+
+/* Glow and subtle motion */
+.bloom, .petal, .center{transition:transform 200ms ease}
+
+/* Responsive */
+@media (max-width:600px){.flower{width:56px;height:110px}.bloom{width:80px;height:80px}.petal{width:30px;height:40px}}
+
+/* SVG bloom styling */
+.bloom-svg{width:140px;height:120px;display:block}
+.bloom-svg .svg-p{filter:blur(0.2px);mix-blend-mode:screen}
+.bloom-svg .svg-center{filter:drop-shadow(0 6px 22px rgba(255,200,120,0.12))}
+
+/* more subtle heart styling + variety */
+.heart{border-radius:20px 20px 0 0;box-shadow:0 6px 28px rgba(255,110,166,0.14);background:linear-gradient(180deg,#ffc0d7,#ff6ea6);transform-origin:center;}
+.heart{animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+
+/* Make rings softer and add inner glow */
+.ring{border-color:rgba(255,140,170,0.14);box-shadow:0 0 40px rgba(255,110,166,0.06)}
+.ring-heart{box-shadow:0 6px 34px rgba(255,110,166,0.16)}
+
+/* tweak vignette and background to be deeper */
+.vignette{background:radial-gradient(60% 45% at 50% 36%, rgba(255,255,255,0.01), transparent 12%, rgba(0,0,0,0.68));mix-blend-mode:multiply}
+
+/* responsive bloom scaling */
+@media (max-width:900px){.bloom-svg{width:110px;height:96px}}
+
+/* Valentine overlay */
+.valentine-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto}
+.valentine-overlay .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));padding:28px 36px;border-radius:14px;backdrop-filter:blur(6px);box-shadow:0 10px 40px rgba(0,0,0,0.6);text-align:center;color:#ffdfe9}
+.valentine-overlay h1{margin:0 0 12px;font-size:26px}
+.btn-yes{background:linear-gradient(180deg,#ff9acb,#ff6ea6);border:0;color:#2b0016;padding:12px 30px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 8px 26px rgba(255,110,166,0.18)}
+
+/* Flower grown state */
+.flower.grown{transform:translateY(-10px) scale(1.35) !important}
+.flower.grown .stem{height:120px}
+.flower.grown .bloom{bottom:116px}
+.flower.grown .foliage{transform:translateX(-50%) scale(1.05)}
+
+/* Big centered heart */
+.big-heart{position:fixed;left:50%;top:36%;transform:translate(-50%,-50%) scale(0.8);width:260px;height:260px;border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;animation:heartPop 900ms cubic-bezier(.2,.9,.25,1) forwards}
+.big-heart-core{width:160px;height:160px;background:linear-gradient(180deg,#ff9acb,#ff4b9a);transform:rotate(-45deg);border-radius:20px 20px 0 0;box-shadow:0 20px 60px rgba(255,100,150,0.22)}
+@keyframes heartPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0.4)}60%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{transform:translate(-50%,-50%) scale(1)}}
+
+/* Letter/envelope */
+.letter{position:fixed;left:50%;top:62%;transform:translate(-50%,-50%);width:360px;height:220px;pointer-events:none}
+.letter .envelope{position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,#2b0f1a,#1b0810);border-radius:10px;transform-origin:top center;animation:envOpen 1s ease forwards}
+.letter .paper{position:absolute;left:12px;right:12px;top:30px;bottom:12px;background:linear-gradient(180deg,#fff6ea,#fff0d8);border-radius:6px;padding:18px;opacity:0;transform:translateY(12px);transition:all 420ms ease;box-shadow:0 10px 30px rgba(0,0,0,0.24)}
+.scene.accepted .letter .paper{opacity:1;transform:translateY(0)}
+@keyframes envOpen{0%{transform:rotateX(0deg)}50%{transform:rotateX(-90deg)}100%{transform:rotateX(-180deg);opacity:0}}
+
+
+    </style>
+  </head>
+  <body>
+    <div class="scene" id="scene">
+      <div class="vignette"></div>
+      <div class="stars" id="stars"></div>
+      <div class="hearts" id="hearts"></div>
+      <div class="field" id="field">
+        <div class="grass"></div>
+      </div>
+      <!-- Valentine overlay -->
+      <div class="valentine-overlay" id="valOverlay">
+        <div class="card">
+          <h1>Will you be my Valentine?</h1>
+          <div style="display:flex;gap:12px;justify-content:center">
+            <button class="btn-yes" id="yesBtn">Yes</button>
+            <button class="btn-no" id="noBtn">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    (function(){
+      const HEART_INTERVAL = 320
+      const HEART_LIFETIME = 9000
+      const RING_PROB = 0.26
+      const STAR_COUNT = 110
+
+      const rand = (a,b) => Math.random()*(b-a)+a
+
+      const starsEl = document.getElementById('stars')
+      const heartsEl = document.getElementById('hearts')
+      const fieldEl = document.getElementById('field')
+
+      // create stars
+      for(let i=0;i<STAR_COUNT;i++){
+        const s = document.createElement('div')
+        s.className = 'star'
+        s.style.left = (Math.random()*100) + '%'
+        s.style.top = (Math.random()*60) + '%'
+        s.style.animationDelay = (Math.random()*3) + 's'
+        s.style.opacity = Math.random()
+        starsEl.appendChild(s)
+      }
+
+      // helper to create flower DOM
+      function flowerDOM(left, scale=1, delay=0){
+        const f = document.createElement('div')
+        f.className = 'flower'
+        f.style.left = left + '%'
+        f.style.transform = 'scale('+scale+')'
+        f.style.animationDelay = delay + 's'
+
+        const foliage = document.createElement('div')
+        foliage.className = 'foliage'
+        const l1 = document.createElement('div'); l1.className='leaf big l1'
+        const l2 = document.createElement('div'); l2.className='leaf big l2'
+        const l3 = document.createElement('div'); l3.className='leaf med l3'
+        const l4 = document.createElement('div'); l4.className='leaf med l4'
+        const l5 = document.createElement('div'); l5.className='leaf sm l5'
+        foliage.appendChild(l1); foliage.appendChild(l2); foliage.appendChild(l3); foliage.appendChild(l4); foliage.appendChild(l5)
+
+        const stem = document.createElement('div'); stem.className = 'stem'
+
+        const bloom = document.createElement('div'); bloom.className = 'bloom'
+        bloom.innerHTML = `
+          <svg class="bloom-svg" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="petalGradLocal" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#ffd6e6" stop-opacity="1" />
+                <stop offset="100%" stop-color="#ff6ea6" stop-opacity="1" />
+              </linearGradient>
+              <radialGradient id="centerGradLocal" cx="35%" cy="35%">
+                <stop offset="0%" stop-color="#fff2b8" />
+                <stop offset="60%" stop-color="#ffd77a" />
+                <stop offset="100%" stop-color="#ffc65a" />
+              </radialGradient>
+            </defs>
+            <g class="petals" transform="translate(100,92)">
+              <ellipse class="svg-p" cx="-36" cy="-12" rx="28" ry="42" fill="url(#petalGradLocal)" transform="rotate(-18)" />
+              <ellipse class="svg-p" cx="36" cy="-12" rx="28" ry="42" fill="url(#petalGradLocal)" transform="rotate(18)" />
+              <ellipse class="svg-p" cx="0" cy="-36" rx="34" ry="44" fill="url(#petalGradLocal)" transform="rotate(0)" />
+              <ellipse class="svg-p" cx="0" cy="10" rx="36" ry="40" fill="url(#petalGradLocal)" transform="rotate(0)" />
+              <circle cx="0" cy="-2" r="18" fill="url(#centerGradLocal)" class="svg-center" />
+            </g>
+          </svg>`
+
+        f.appendChild(foliage)
+        f.appendChild(stem)
+        f.appendChild(bloom)
+        return f
+      }
+
+      // place flowers
+      fieldEl.appendChild(flowerDOM(28,1.02,0))
+      fieldEl.appendChild(flowerDOM(44,1.15,0.35))
+      fieldEl.appendChild(flowerDOM(60,0.94,-0.16))
+      fieldEl.appendChild(flowerDOM(74,0.88,0.22))
+
+      // overlay actions
+      const overlay = document.getElementById('valOverlay')
+      const yesBtn = document.getElementById('yesBtn')
+      const noBtn = document.getElementById('noBtn')
+      yesBtn.addEventListener('click', ()=>{
+        // hide overlay
+        overlay.style.display = 'none'
+        // mark scene accepted
+        const scene = document.getElementById('scene')
+        scene.classList.add('accepted')
+        // make flowers grow
+        document.querySelectorAll('.flower').forEach(f=> f.classList.add('grown'))
+        // show big heart (SVG)
+        const bh = document.createElement('div'); bh.className='big-heart'
+        bh.innerHTML = `<svg viewBox="0 0 32 29" width="240" height="220"><defs><linearGradient id="bigGLocal" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#ff9acb"/><stop offset="100%" stop-color="#ff4b9a"/></linearGradient></defs><path d="M23.6 2c-2.5 0-4.6 1.6-5.6 3.2C16 3.6 13.9 2 11.4 2 7 2 4 5 4 9.3c0 8.2 12.6 14.6 12.6 14.6S29.2 17.5 29.2 9.3C29.2 5 26.2 2 23.6 2z" fill="url(#bigGLocal)"/></svg>`
+        scene.appendChild(bh)
+        // play short chime via WebAudio
+        try{
+          const ctx = new (window.AudioContext || window.webkitAudioContext)()
+          const o = ctx.createOscillator(); const g = ctx.createGain()
+          o.type = 'sine'; o.frequency.setValueAtTime(520, ctx.currentTime)
+          g.gain.setValueAtTime(0, ctx.currentTime); g.gain.linearRampToValueAtTime(0.12, ctx.currentTime+0.02)
+          o.connect(g); g.connect(ctx.destination); o.start()
+          o.frequency.linearRampToValueAtTime(740, ctx.currentTime+0.45)
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.9)
+          setTimeout(()=>{ o.stop(); ctx.close() }, 1000)
+        }catch(e){}
+        // show letter after short delay and start typing
+        setTimeout(()=>{
+          const letter = document.createElement('div'); letter.className='letter'
+          const env = document.createElement('div'); env.className='envelope'
+          const paper = document.createElement('div'); paper.className='paper'
+          paper.innerHTML = '<h2>For You</h2><p id="typed">&nbsp;</p>'
+          letter.appendChild(env); letter.appendChild(paper); scene.appendChild(letter)
+          // typed effect
+          const text = 'Roses are pink and stars softly gleam — my heart blooms brighter because of you. Will you hold it forever?'
+          let i = 0
+          const out = document.getElementById('typed')
+          const ti = setInterval(()=>{
+            i++
+            out.textContent = text.slice(0,i)
+            if(i>=text.length) clearInterval(ti)
+          },36)
+        }, 520)
+      })
+
+      noBtn.addEventListener('click', ()=>{
+        // playful rejection animation: briefly shake the overlay card then flash a tiny broken heart
+        const card = overlay.querySelector('.card')
+        card.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:420})
+        const bh = document.createElement('div'); bh.className='big-heart'
+        bh.style.opacity = '0.9'
+        bh.innerHTML = `<svg viewBox="0 0 32 29" width="140" height="120"><path d="M23.6 2c-2.5 0-4.6 1.6-5.6 3.2C16 3.6 13.9 2 11.4 2 7 2 4 5 4 9.3c0 8.2 12.6 14.6 12.6 14.6S29.2 17.5 29.2 9.3C29.2 5 26.2 2 23.6 2z" fill="#d0d0d0"/></svg>`
+        document.body.appendChild(bh)
+        setTimeout(()=>{ bh.animate([{opacity:1},{opacity:0}],{duration:900}); setTimeout(()=>bh.remove(),900) },200)
+      })
+
+      // hearts and rings spawning (SVG hearts)
+      let id = 1
+      const FLOWER_POSITIONS = [28,44,60,74]
+      setInterval(()=>{
+        const hid = id++
+        // pick a flower and apply a small random offset so hearts cluster around blooms
+        const base = FLOWER_POSITIONS[Math.floor(Math.random()*FLOWER_POSITIONS.length)]
+        let left = base + rand(-6,6)
+        left = Math.max(24, Math.min(76, left))
+        const size = Math.round(rand(10,28))
+        const hwrap = document.createElement('div')
+        hwrap.className = 'heart-svg'
+        hwrap.style.left = left + '%'
+        hwrap.style.width = size + 'px'
+        hwrap.style.height = size + 'px'
+        hwrap.style.animationDuration = (rand(3.5,6.5)) + 's'
+        hwrap.style.opacity = rand(0.6,1)
+        hwrap.style.setProperty('--r', (rand(-30,30)) + 'deg')
+        hwrap.innerHTML = `
+          <svg viewBox="0 0 32 29" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+            <defs><linearGradient id="g${hid}" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#ffd6e6"/><stop offset="100%" stop-color="#ff6ea6"/></linearGradient></defs>
+            <path d="M23.6 2c-2.5 0-4.6 1.6-5.6 3.2C16 3.6 13.9 2 11.4 2 7 2 4 5 4 9.3c0 8.2 12.6 14.6 12.6 14.6S29.2 17.5 29.2 9.3C29.2 5 26.2 2 23.6 2z" fill="url(#g${hid})" />
+          </svg>`
+        heartsEl.appendChild(hwrap)
+        setTimeout(()=>{ if(hwrap.parentNode) hwrap.parentNode.removeChild(hwrap) }, HEART_LIFETIME)
+
+        if(Math.random() < RING_PROB){
+          const rid = 'r'+hid
+          const r = document.createElement('div')
+          r.className = 'ring'
+          // place rings near flowers as well (wider vertical variance)
+          let rleft = base + rand(-10,10)
+          rleft = Math.max(24, Math.min(76, rleft))
+          r.style.left = rleft + '%'
+          r.style.bottom = rand(12,38) + '%'
+          r.style.animationDuration = (rand(3.2,5.8)) + 's'
+          r.style.transform = 'scale(' + rand(0.7,1.4) + ')'
+          r.innerHTML = '<svg viewBox="0 0 32 29" width="28" height="28"><path d="M23.6 2c-2.5 0-4.6 1.6-5.6 3.2C16 3.6 13.9 2 11.4 2 7 2 4 5 4 9.3c0 8.2 12.6 14.6 12.6 14.6S29.2 17.5 29.2 9.3C29.2 5 26.2 2 23.6 2z" fill="#ff9acb"/></svg>'
+          heartsEl.appendChild(r)
+          setTimeout(()=>{ if(r.parentNode) r.parentNode.removeChild(r) }, 7200)
+        }
+      }, HEART_INTERVAL)
+
+    })()
+    </script>
+  </body>
+</html>
