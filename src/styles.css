@@ -1,0 +1,118 @@
+:root{--bg:#070617;--pink:#ff6ea6;--soft-pink:#ff9acb;--leaf:#2aa85a;--glow:0 0 18px rgba(255,110,166,0.25)}
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font-family:Inter,system-ui,Segoe UI,Arial}
+.scene{position:relative;height:100vh;overflow:hidden}
+
+/* Stars */
+.stars{position:absolute;inset:0;pointer-events:none}
+.star{position:absolute;width:3px;height:3px;border-radius:50%;background:#ffd88a;filter:blur(0.6px);animation:twinkle 3s infinite alternate}
+@keyframes twinkle{from{opacity:0.2;transform:scale(0.6)}to{opacity:1;transform:scale(1.3)}}
+
+/* Hearts */
+.hearts{position:absolute;inset:0;pointer-events:none}
+.heart-svg{position:absolute;bottom:12%;transform-origin:center;animation:floatUp linear forwards;will-change:transform,opacity}
+.heart-svg svg{display:block}
+@keyframes floatUp{0%{transform:translateY(0) rotate(var(--r, -45deg));opacity:1}40%{transform:translateY(-80px) rotate(var(--r, -45deg)) scale(1.05)}100%{transform:translateY(-240px) rotate(var(--r, -45deg));opacity:0}}
+
+/* Ring (circle with small heart inside) */
+.ring{position:absolute;bottom:20%;width:86px;height:86px;border-radius:50%;border:4px solid rgba(255,140,170,0.18);box-shadow:0 0 28px rgba(255,110,166,0.08);animation:riseRing linear forwards;display:flex;align-items:center;justify-content:center}
+.ring svg{filter:drop-shadow(0 6px 20px rgba(255,110,166,0.12))}
+@keyframes riseRing{0%{transform:translateY(0) scale(0.9);opacity:1}80%{opacity:1}100%{transform:translateY(-220px) scale(1.05);opacity:0}}
+
+/* Field area */
+.field{position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 50% at 50% 38%, rgba(255,255,255,0.02), transparent 15%, rgba(0,0,0,0.55));mix-blend-mode:multiply}
+.field .groundGlow{position:absolute;left:0;right:0;bottom:32%;height:18%;background:radial-gradient(50% 40% at 50% 100%, rgba(255,130,170,0.03), transparent 60%)}
+.grass{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(0deg,#0b2a10 0%, transparent 60%);box-shadow:inset 0 6px 20px rgba(0,0,0,0.6)}
+
+/* Flower */
+.flower{position:absolute;bottom:18%;width:120px;height:180px;display:flex;align-items:flex-end;flex-direction:column;transform-origin:center bottom;animation:sway 4s ease-in-out infinite}
+.flower .stem{width:6px;height:86px;background:linear-gradient(180deg,#2f8a3b,#174b20);margin:0 auto;border-radius:6px;box-shadow:inset 0 4px 8px rgba(0,0,0,0.3)}
+.foliage{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);width:220px;height:120px;pointer-events:none}
+.leaf{position:absolute;border-radius:40px;background:linear-gradient(180deg,#1f7a38,#0f5024);box-shadow:inset 0 -8px 22px rgba(0,0,0,0.45)}
+.leaf.big{width:92px;height:86px;bottom:6px}
+.leaf.med{width:64px;height:58px;bottom:18px}
+.leaf.sm{width:46px;height:40px;bottom:28px}
+.leaf.l1{left:6%;transform:rotate(-14deg)}
+.leaf.l2{right:6%;transform:rotate(16deg)}
+.leaf.l3{left:26%;transform:rotate(-6deg)}
+.leaf.l4{right:24%;transform:rotate(8deg)}
+.leaf.l5{left:48%;transform:rotate(2deg)}
+.bloom{position:absolute;bottom:86px;left:50%;transform:translateX(-50%);width:140px;height:120px;display:grid;place-items:center}
+.petal{position:absolute;width:56px;height:72px;background:linear-gradient(180deg,var(--pink),#ff4b9a);border-radius:50%;box-shadow:0 6px 40px rgba(255,110,166,0.18);opacity:0.98;mix-blend-mode:screen}
+.petal.p1{transform:translate(-16px,-8px) rotate(-4deg)}
+.petal.p2{transform:translate(18px,-8px) rotate(6deg)}
+.petal.p3{transform:translate(4px,18px) rotate(40deg)}
+.petal.p4{transform:translate(4px,18px) rotate(-40deg)}
+.center{width:34px;height:34px;background:radial-gradient(circle at 35% 35%, #fff2b8, #ffd77a 40%, #ffc65a 100%);border-radius:50%;box-shadow:0 0 26px rgba(255,200,120,0.14)}
+
+.bloom, .petal, .center{transition:transform 200ms ease}
+@keyframes sway{0%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}100%{transform:rotate(-3deg)}}
+
+/* small grass blades */
+.grass:after{content:'';position:absolute;left:6%;bottom:8px;width:6px;height:120px;background:linear-gradient(180deg,#0b6b2b,#083815);border-radius:6px;transform:rotate(-8deg);box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+.grass:before{content:'';position:absolute;right:8%;bottom:12px;width:6px;height:140px;background:linear-gradient(180deg,#0b6b2b,#083815);border-radius:6px;transform:rotate(12deg);box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+
+/* Glow and subtle motion */
+.bloom, .petal, .center{transition:transform 200ms ease}
+
+/* Responsive */
+@media (max-width:600px){.flower{width:56px;height:110px}.bloom{width:80px;height:80px}.petal{width:30px;height:40px}}
+
+/* SVG bloom styling */
+.bloom-svg{width:140px;height:120px;display:block}
+.bloom-svg .svg-p{filter:blur(0.2px);mix-blend-mode:screen}
+.bloom-svg .svg-center{filter:drop-shadow(0 6px 22px rgba(255,200,120,0.12))}
+
+/* more subtle heart styling + variety */
+.heart{border-radius:20px 20px 0 0;box-shadow:0 6px 28px rgba(255,110,166,0.14);background:linear-gradient(180deg,#ffc0d7,#ff6ea6);transform-origin:center;}
+.heart{animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+
+/* Make rings softer and add inner glow */
+.ring{border-color:rgba(255,140,170,0.14);box-shadow:0 0 40px rgba(255,110,166,0.06)}
+.ring-heart{box-shadow:0 6px 34px rgba(255,110,166,0.16)}
+
+/* tweak vignette and background to be deeper */
+.vignette{background:radial-gradient(60% 45% at 50% 36%, rgba(255,255,255,0.01), transparent 12%, rgba(0,0,0,0.68));mix-blend-mode:multiply}
+
+/* responsive bloom scaling */
+@media (max-width:900px){.bloom-svg{width:110px;height:96px}}
+
+/* Valentine overlay */
+.valentine-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto}
+.valentine-overlay .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));padding:28px 36px;border-radius:14px;backdrop-filter:blur(6px);box-shadow:0 10px 40px rgba(0,0,0,0.6);text-align:center;color:#ffdfe9}
+.valentine-overlay h1{margin:0 0 12px;font-size:26px}
+.btn-yes{background:linear-gradient(180deg,#ff9acb,#ff6ea6);border:0;color:#2b0016;padding:12px 30px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 8px 26px rgba(255,110,166,0.18)}
+
+/* Flower grown state */
+.flower.grown{transform:translateY(-10px) scale(1.35) !important}
+.flower.grown .stem{height:120px}
+.flower.grown .bloom{bottom:116px}
+.flower.grown .foliage{transform:translateX(-50%) scale(1.05)}
+
+/* Big centered heart */
+.big-heart{position:fixed;left:50%;top:36%;transform:translate(-50%,-50%) scale(0.8);width:260px;height:260px;border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;animation:heartPop 900ms cubic-bezier(.2,.9,.25,1) forwards}
+.big-heart-core{width:160px;height:160px;background:linear-gradient(180deg,#ff9acb,#ff4b9a);transform:rotate(-45deg);border-radius:20px 20px 0 0;box-shadow:0 20px 60px rgba(255,100,150,0.22)}
+@keyframes heartPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0.4)}60%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{transform:translate(-50%,-50%) scale(1)}}
+
+/* Letter/envelope */
+.letter{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,520px);max-width:92vw;max-height:calc(100vh - 80px);display:flex;flex-direction:column;align-items:stretch;padding:0 12px;pointer-events:none}
+.letter .envelope{position:relative;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,#2b0f1a,#1b0810);border-radius:10px;transform-origin:top center;animation:envOpen 1s ease forwards;perspective:800px;flex:0 0 auto}
+.letter .envelope:before{content:'';position:absolute;left:8%;right:8%;top:0;height:56px;background:linear-gradient(180deg,#36202a,#2b0f1a);border-radius:6px;transform-origin:top center;display:block;transform:translateY(-6px) rotateX(0deg)}
+.letter.open .envelope:before{animation:flapOpen 760ms cubic-bezier(.2,.9,.25,1) forwards}
+.letter .paper{position:relative;margin:12px 0 12px;background:linear-gradient(180deg,#fff6ea,#fff0d8);border-radius:6px;padding:18px;opacity:0;transform:translateY(18px);transition:all 420ms ease;box-shadow:0 10px 30px rgba(0,0,0,0.24);overflow:auto;flex:1 1 auto;max-height:calc(100% - 132px)}
+.letter.open .paper{opacity:1;transform:translateY(-6px)}
+
+@keyframes flapOpen{0%{transform:translateY(-6px) rotateX(0deg)}40%{transform:translateY(-2px) rotateX(-40deg)}100%{transform:translateY(0px) rotateX(-180deg);opacity:0}}
+.scene.accepted .letter .paper{opacity:1;transform:translateY(0)}
+
+/* preserve newlines and multiple spaces in the typed letter */
+.letter .paper #typed{white-space:pre-wrap;line-height:1.6;text-indent:1.2em}
+@keyframes envOpen{0%{transform:rotateX(0deg)}50%{transform:rotateX(-90deg)}100%{transform:rotateX(-180deg);opacity:0}}
+
+/* small chime animation hint for acceptance */
+.scene.accepted .card{box-shadow:0 14px 46px rgba(255,90,140,0.18)}
+
+
+
