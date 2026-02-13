@@ -315,6 +315,9 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
         scene.classList.add('accepted')
         // make existing flowers grow
         document.querySelectorAll('.flower').forEach(f=> f.classList.add('grown'))
+        // allow paint on iOS before heavy DOM work (prevents content appearing only after tab switch)
+        void scene.offsetWidth
+        setTimeout(()=>{
 
         // add extra flowers to the field (kept inside central band)
         const extraFlowers = [30,50,66]
@@ -440,6 +443,7 @@ Joshua ❤️`
             if(i>=text.length){ clearInterval(ti); window.removeEventListener('resize', _rh) }
           },36)
         }, 520)
+        }, 40)
       }
 
       yesBtn.addEventListener('click', acceptScene)

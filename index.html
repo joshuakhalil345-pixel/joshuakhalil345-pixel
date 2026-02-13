@@ -70,16 +70,26 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
 /* Responsive */
 @media (max-width:600px){.flower{width:56px;height:110px}.bloom{width:80px;height:80px}.petal{width:30px;height:40px}}
 
-/* Phone-specific tweaks */
+/* Phone-specific tweaks: scale down elements so letter + big heart fit */
 @media (max-width:420px){
-  .flower{width:48px;height:96px}
-  .bloom{width:72px;height:64px}
-  .big-heart{width:200px;height:200px;top:32%}
-  .letter{width:300px;height:200px}
-  .valentine-overlay .card{padding:18px 20px}
-  .valentine-overlay .card h1{font-size:20px}
+  .flower{width:42px;height:84px}
+  .flower .stem{height:70px}
+  .bloom{width:64px;height:56px}
+  .petal{width:26px;height:36px}
+  .big-heart{width:180px;height:180px;top:30%}
+  .big-heart-core{width:120px;height:120px}
+  .letter{width:min(88vw,320px);max-height:calc(100vh - 120px)}
+  .letter .paper{padding:12px}
+  .valentine-overlay .card{padding:16px 18px}
+  .valentine-overlay .card h1{font-size:18px}
   .valentine-overlay .card div{flex-direction:column}
-  .btn-yes, .btn-ofcourse{padding:10px 16px;width:100%}
+  .btn-yes, .btn-ofcourse{padding:10px 14px;width:100%}
+  /* grown state less aggressive on phones so flowers don't overlap too much */
+  .flower.grown{transform:translateY(-6px) scale(1.12) !important}
+  .flower.grown .stem{height:96px}
+  .flower.grown .bloom{bottom:96px}
+  /* reduce ring / floating offsets slightly */
+  .ring{width:72px;height:72px}
 }
 
 /* SVG bloom styling */
@@ -337,6 +347,9 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
         scene.classList.add('accepted')
         // make existing flowers grow
         document.querySelectorAll('.flower').forEach(f=> f.classList.add('grown'))
+        // allow paint on iOS before heavy DOM work (prevents content appearing only after tab switch)
+        void scene.offsetWidth
+        setTimeout(()=>{
 
         // add extra flowers to the field (kept inside central band)
         const extraFlowers = [30,50,66]
@@ -464,6 +477,7 @@ Joshua ❤️`
             if(i>=text.length){ clearInterval(ti); window.removeEventListener('resize', _rh) }
           },36)
         }, 520)
+        }, 40)
       }
 
       yesBtn.addEventListener('click', acceptScene)

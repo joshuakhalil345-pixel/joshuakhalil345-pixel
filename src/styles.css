@@ -115,4 +115,25 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
 .scene.accepted .card{box-shadow:0 14px 46px rgba(255,90,140,0.18)}
 
 
+/* Phone-specific adjustments: make flowers, blooms, big-heart and letter fit better on small screens */
+@media (max-width:420px){
+	.flower{width:42px;height:84px}
+	.flower .stem{height:70px}
+	.bloom{width:64px;height:56px}
+	.petal{width:26px;height:36px}
+	.big-heart{width:180px;height:180px;top:30%}
+	.big-heart-core{width:120px;height:120px}
+	.letter{width:min(88vw,320px);max-height:calc(100vh - 120px)}
+	.letter .paper{padding:12px}
+	.valentine-overlay .card{padding:16px 18px}
+	.valentine-overlay .card h1{font-size:18px}
+	.valentine-overlay .card div{flex-direction:column}
+	.btn-yes, .btn-ofcourse{padding:10px 14px;width:100%}
+	.flower.grown{transform:translateY(-6px) scale(1.12) !important}
+	.flower.grown .stem{height:96px}
+	.flower.grown .bloom{bottom:96px}
+	.ring{width:72px;height:72px}
+}
+
+
 
