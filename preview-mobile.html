@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>Flowers & Hearts — Standalone</title>
+    <title>Flowers & Hearts — Mobile Preview</title>
     <style>
 /* --- inlined styles from src/styles.css --- */
 :root{--bg:#070617;--pink:#ff6ea6;--soft-pink:#ff9acb;--leaf:#2aa85a;--glow:0 0 18px rgba(255,110,166,0.25)}
@@ -70,18 +70,6 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
 /* Responsive */
 @media (max-width:600px){.flower{width:56px;height:110px}.bloom{width:80px;height:80px}.petal{width:30px;height:40px}}
 
-/* Phone-specific tweaks */
-@media (max-width:420px){
-  .flower{width:48px;height:96px}
-  .bloom{width:72px;height:64px}
-  .big-heart{width:200px;height:200px;top:32%}
-  .letter{width:300px;height:200px}
-  .valentine-overlay .card{padding:18px 20px}
-  .valentine-overlay .card h1{font-size:20px}
-  .valentine-overlay .card div{flex-direction:column}
-  .btn-yes, .btn-ofcourse{padding:10px 16px;width:100%}
-}
-
 /* SVG bloom styling */
 .bloom-svg{width:140px;height:120px;display:block}
 .bloom-svg .svg-p{filter:blur(0.2px);mix-blend-mode:screen}
@@ -106,7 +94,6 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
 .valentine-overlay .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));padding:28px 36px;border-radius:14px;backdrop-filter:blur(6px);box-shadow:0 10px 40px rgba(0,0,0,0.6);text-align:center;color:#ffdfe9}
 .valentine-overlay h1{margin:0 0 12px;font-size:26px}
 .btn-yes, .btn-ofcourse{background:linear-gradient(180deg,#ff9acb,#ff6ea6);border:0;color:#2b0016;padding:12px 30px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 8px 26px rgba(255,110,166,0.18)}
-
   .mute-btn{position:fixed;top:12px;right:12px;z-index:60;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);color:#ffdfe9;padding:8px 10px;border-radius:10px;cursor:pointer;backdrop-filter:blur(4px)}
 
 /* Flower grown state */
@@ -121,19 +108,41 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
 @keyframes heartPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0.4)}60%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{transform:translate(-50%,-50%) scale(1)}}
 
 /* Letter/envelope */
-.letter{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,520px);max-width:92vw;max-height:calc(100vh - 80px);display:flex;flex-direction:column;align-items:stretch;padding:0 12px;pointer-events:none}
-.letter .envelope{position:relative;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,#2b0f1a,#1b0810);border-radius:10px;transform-origin:top center;animation:envOpen 1s ease forwards;flex:0 0 auto}
-.letter .paper{position:relative;margin:12px 0 12px;background:linear-gradient(180deg,#fff6ea,#fff0d8);border-radius:6px;padding:18px;opacity:0;transform:translateY(12px);transition:all 420ms ease;box-shadow:0 10px 30px rgba(0,0,0,0.24);overflow:auto;flex:1 1 auto;max-height:calc(100% - 132px)}
+.letter{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,460px);max-width:92vw;max-height:calc(100vh - 60px);display:flex;flex-direction:column;align-items:stretch;padding:0 12px;pointer-events:none}
+.letter .envelope{position:relative;left:0;right:0;top:0;height:110px;background:linear-gradient(180deg,#2b0f1a,#1b0810);border-radius:10px;transform-origin:top center;animation:envOpen 1s ease forwards;flex:0 0 auto}
+.letter .paper{position:relative;margin:12px 0 12px;background:linear-gradient(180deg,#fff6ea,#fff0d8);border-radius:6px;padding:14px;opacity:0;transform:translateY(12px);transition:all 420ms ease;box-shadow:0 10px 30px rgba(0,0,0,0.24);overflow:auto;flex:1 1 auto;max-height:calc(100% - 122px)}
 .scene.accepted .letter .paper{opacity:1;transform:translateY(0)}
 @keyframes envOpen{0%{transform:rotateX(0deg)}50%{transform:rotateX(-90deg)}100%{transform:rotateX(-180deg);opacity:0}}
 
 /* preserve newlines and multiple spaces in the typed letter */
 .letter .paper #typed{white-space:pre-wrap;line-height:1.6;text-indent:1.2em}
 
+/* Phone-specific tweaks */
+@media (max-width:420px){
+  .flower{width:48px;height:96px}
+  .bloom{width:72px;height:64px}
+  .big-heart{width:200px;height:200px;top:32%}
+  .letter{width:300px;height:200px}
+  .valentine-overlay .card{padding:18px 20px}
+  .valentine-overlay .card h1{font-size:20px}
+  .valentine-overlay .card div{flex-direction:column}
+  .btn-yes, .btn-ofcourse{padding:10px 16px;width:100%}
+}
 
     </style>
   </head>
   <body>
+    <script>
+      // Force mobile matchMedia for preview (desktop only helper)
+      window.__forcePhone = true;
+      const _origMatchMedia = window.matchMedia;
+      window.matchMedia = function(q){
+        if(window.__forcePhone && /max-width\s*:\s*420px/.test(q)){
+          return {matches:true, media:q, addListener:()=>{}, removeListener:()=>{}, addEventListener:()=>{}, removeEventListener:()=>{}};
+        }
+        return _origMatchMedia ? _origMatchMedia.call(window, q) : {matches:false, media:q, addListener:()=>{}, removeListener:()=>{}};
+      }
+    </script>
     <div class="scene" id="scene">
       <div class="vignette"></div>
       <div class="stars" id="stars"></div>
@@ -163,14 +172,8 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
 
       const rand = (a,b) => Math.random()*(b-a)+a
 
-      // detect phone layout (narrow viewports) and update on change
-      let isPhone = window.matchMedia && window.matchMedia('(max-width:420px)').matches
-      const _mql = window.matchMedia && window.matchMedia('(max-width:420px)')
-      if(_mql){
-        const _onChange = (e)=>{ isPhone = e.matches }
-        if(typeof _mql.addEventListener === 'function') _mql.addEventListener('change', _onChange)
-        else if(typeof _mql.addListener === 'function') _mql.addListener(_onChange)
-      }
+      // detect phone layout (narrow viewports)
+      const isPhone = window.matchMedia && window.matchMedia('(max-width:420px)').matches
       function getFlowerPositions(){
         return isPhone ? [32,44,56,68] : [28,44,60,74]
       }
@@ -178,76 +181,6 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
       const starsEl = document.getElementById('stars')
       const heartsEl = document.getElementById('hearts')
       const fieldEl = document.getElementById('field')
-
-      // file-based background audio (preferred) + WebAudio fallback
-      const BG_FILE = 'videos/ariana-grande-tattooed-heart-live-from-london.mp3'
-      let bgAudio = null
-      let isMuted = false
-      function startFileMusic(){
-        if(bgAudio) return
-        try{
-          bgAudio = new Audio(BG_FILE)
-          bgAudio.loop = true
-          bgAudio.volume = 0.45
-          if(isMuted) bgAudio.muted = true
-          const p = bgAudio.play()
-          if(p && typeof p.catch === 'function'){
-            p.catch(()=>{
-              bgAudio = null
-              startMusic()
-            })
-          }
-        }catch(e){ bgAudio = null; startMusic() }
-      }
-
-      let _musicNodes = null
-      function startMusic(){
-        if(_musicNodes) return
-        const ctx = new (window.AudioContext || window.webkitAudioContext)()
-        const master = ctx.createGain(); master.gain.setValueAtTime(0.0001, ctx.currentTime)
-        master.connect(ctx.destination)
-
-        const oscA = ctx.createOscillator(); oscA.type='sine'; oscA.frequency.setValueAtTime(220, ctx.currentTime)
-        const oscB = ctx.createOscillator(); oscB.type='sine'; oscB.frequency.setValueAtTime(277.18, ctx.currentTime)
-        const gA = ctx.createGain(); gA.gain.setValueAtTime(0.12, ctx.currentTime)
-        const gB = ctx.createGain(); gB.gain.setValueAtTime(0.09, ctx.currentTime)
-        const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.setValueAtTime(1200, ctx.currentTime)
-
-        oscA.connect(gA); oscB.connect(gB);
-        gA.connect(filter); gB.connect(filter); filter.connect(master)
-        oscA.start(); oscB.start()
-        if(isMuted) master.gain.setValueAtTime(0.0001, ctx.currentTime)
-        else master.gain.exponentialRampToValueAtTime(0.55, ctx.currentTime+0.6)
-
-        // gentle bell notes
-        function playBell(){
-          const o = ctx.createOscillator(); o.type='triangle'; const gg = ctx.createGain();
-          const freqs = [440,554.37,659.25]
-          o.frequency.setValueAtTime(freqs[Math.floor(Math.random()*freqs.length)], ctx.currentTime)
-          gg.gain.setValueAtTime(0, ctx.currentTime); gg.gain.linearRampToValueAtTime(0.12, ctx.currentTime+0.01); gg.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+1.1)
-          o.connect(gg); gg.connect(master); o.start(); setTimeout(()=>{ try{o.stop()}catch(e){} },1200)
-        }
-        const bellIv = setInterval(playBell, 1600 + Math.random()*600)
-
-        _musicNodes = {ctx, master, oscA, oscB, gA, gB, filter, bellIv}
-      }
-      function stopMusic(){
-        if(!_musicNodes) return
-        try{ _musicNodes.master.gain.exponentialRampToValueAtTime(0.0001, _musicNodes.ctx.currentTime+0.6) }catch(e){}
-        setTimeout(()=>{
-          try{ _musicNodes.oscA.stop(); _musicNodes.oscB.stop(); clearInterval(_musicNodes.bellIv); _musicNodes.ctx.close() }catch(e){}
-          _musicNodes = null
-        }, 900)
-      }
-
-      // mute control
-      function applyMuteState(){
-        const btn = document.getElementById('muteBtn')
-        try{ if(bgAudio) bgAudio.muted = isMuted }catch(e){}
-        try{ if(_musicNodes && _musicNodes.master){ _musicNodes.master.gain.exponentialRampToValueAtTime(isMuted?0.0001:0.55, _musicNodes.ctx.currentTime+0.2) } }catch(e){}
-        if(btn) { btn.textContent = isMuted ? '🔇' : '🔊'; btn.setAttribute('aria-pressed', String(isMuted)) }
-      }
-      function toggleMute(){ isMuted = !isMuted; applyMuteState() }
 
       // create stars
       for(let i=0;i<STAR_COUNT;i++){
@@ -322,14 +255,40 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
       `
       document.head.appendChild(extraHeartStyle)
 
+      // lightweight background music using WebAudio (started on user gesture)
+      let _musicNodes = null
+      function startMusic(){
+        if(_musicNodes) return
+        const ctx = new (window.AudioContext || window.webkitAudioContext)()
+        const master = ctx.createGain(); master.gain.setValueAtTime(0.0001, ctx.currentTime)
+        master.connect(ctx.destination)
+        const oscA = ctx.createOscillator(); oscA.type='sine'; oscA.frequency.setValueAtTime(220, ctx.currentTime)
+        const oscB = ctx.createOscillator(); oscB.type='sine'; oscB.frequency.setValueAtTime(277.18, ctx.currentTime)
+        const gA = ctx.createGain(); gA.gain.setValueAtTime(0.12, ctx.currentTime)
+        const gB = ctx.createGain(); gB.gain.setValueAtTime(0.09, ctx.currentTime)
+        const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.setValueAtTime(1200, ctx.currentTime)
+        oscA.connect(gA); oscB.connect(gB);
+        gA.connect(filter); gB.connect(filter); filter.connect(master)
+        oscA.start(); oscB.start()
+        master.gain.exponentialRampToValueAtTime(0.55, ctx.currentTime+0.6)
+        function playBell(){ const o = ctx.createOscillator(); o.type='triangle'; const gg = ctx.createGain(); const freqs=[440,554.37,659.25]; o.frequency.setValueAtTime(freqs[Math.floor(Math.random()*freqs.length)], ctx.currentTime); gg.gain.setValueAtTime(0, ctx.currentTime); gg.gain.linearRampToValueAtTime(0.12, ctx.currentTime+0.01); gg.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+1.1); o.connect(gg); gg.connect(master); o.start(); setTimeout(()=>{ try{o.stop()}catch(e){} },1200) }
+        const bellIv = setInterval(playBell, 1600 + Math.random()*600)
+        _musicNodes = {ctx, master, oscA, oscB, gA, gB, filter, bellIv}
+      }
+      function stopMusic(){ if(!_musicNodes) return; try{ _musicNodes.master.gain.exponentialRampToValueAtTime(0.0001, _musicNodes.ctx.currentTime+0.6) }catch(e){}; setTimeout(()=>{ try{ _musicNodes.oscA.stop(); _musicNodes.oscB.stop(); clearInterval(_musicNodes.bellIv); _musicNodes.ctx.close() }catch(e){}; _musicNodes=null },900) }
+
+      // mute control for preview
+      let isMuted = false
+      function applyMuteState(){ const btn = document.getElementById('muteBtn'); try{ if(_musicNodes && _musicNodes.master){ _musicNodes.master.gain.exponentialRampToValueAtTime(isMuted?0.0001:0.55, _musicNodes.ctx.currentTime+0.2) } }catch(e){}; if(btn){ btn.textContent = isMuted ? '🔇' : '🔊'; btn.setAttribute('aria-pressed', String(isMuted)) } }
+      function toggleMute(){ isMuted = !isMuted; applyMuteState() }
+
       // overlay actions
       const overlay = document.getElementById('valOverlay')
       const yesBtn = document.getElementById('yesBtn')
       const noBtn = document.getElementById('noBtn')
 
       function acceptScene(){
-        // start background music on acceptance (try file first, fallback to WebAudio)
-        try{ startFileMusic() }catch(e){ try{ startMusic() }catch(e){} }
+        try{ startMusic() }catch(e){}
         // hide overlay
         overlay.style.display = 'none'
         // mark scene accepted
@@ -346,27 +305,19 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
           const f = flowerDOM(pos, scale, 0.1*i)
           fieldEl.appendChild(f)
           // stagger the growth so they rise visually like existing flowers
-          setTimeout(()=>{
-            f.classList.add('grown')
-          }, 120 + i * 80)
+          setTimeout(()=>{ f.classList.add('grown') }, 120 + i * 80)
         })
 
         // spawn a burst of extra hearts near the blooms
         function spawnExtraHearts(count){
-            const FLOWER_POSITIONS = getFlowerPositions().concat([30,50,66])
+          const FLOWER_POSITIONS = getFlowerPositions().concat([30,50,66])
           for(let j=0;j<count;j++){
             const hid = 'x' + Date.now() + Math.random()
             const base = FLOWER_POSITIONS[Math.floor(Math.random()*FLOWER_POSITIONS.length)]
-            const vw = window.innerWidth || document.documentElement.clientWidth
-            const device = vw <= 420 ? 'phone' : (vw <= 900 ? 'tablet' : 'desktop')
-            const offsetRange = device === 'phone' ? 5 : (device === 'tablet' ? 6 : 8)
-            let left = base + rand(-offsetRange, offsetRange)
-            // clamp to a central visible band computed from flower positions
-            const minFlower = Math.min.apply(null, getFlowerPositions())
-            const maxFlower = Math.max.apply(null, getFlowerPositions())
-            const margin = device === 'phone' ? 3 : (device === 'tablet' ? 5 : 6)
-            const clampMin = Math.max(20, minFlower - margin)
-            const clampMax = Math.min(80, maxFlower + margin)
+            let left = base + rand(isPhone ? -6 : -8, isPhone ? 6 : 8)
+            // clamp to a central visible band so hearts don't sit at the extreme edges
+            const clampMin = isPhone ? 28 : 20
+            const clampMax = isPhone ? 72 : 80
             left = Math.max(clampMin, Math.min(clampMax, left))
             // larger size range for bigger hearts
             const size = Math.round(rand(16,56))
@@ -386,10 +337,7 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
               const bh = document.createElement('div')
               bh.className = 'big-floating'
               const bw = Math.round(rand(72,120))
-              const _vw = window.innerWidth || document.documentElement.clientWidth
-              const _device = _vw <= 420 ? 'phone' : (_vw <= 900 ? 'tablet' : 'desktop')
-              const bhOffset = _device === 'phone' ? 8 : (_device === 'tablet' ? 10 : 12)
-              let bhLeft = base + rand(-bhOffset, bhOffset)
+              let bhLeft = base + rand(isPhone ? -8 : -12, isPhone ? 8 : 12)
               bhLeft = Math.max(clampMin, Math.min(clampMax, bhLeft))
               bh.style.left = bhLeft + '%'
               bh.style.bottom = rand(10,22) + '%'
@@ -433,12 +381,9 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
 
 I want us to grow with each other, to walk side by side through every step of life. I want to build my future with you, Yan, because when I look ahead, I see you in it—your smile, your laughter, your love. You’re not just part of my dreams, you are my dream.
 
-
 You’ve shown me what it means to love and be loved, and I can’t imagine a day without you. You are my safe place, my happiness, and my greatest blessing. Every time I call you Baba, every time I hold you close, I’m reminded that I’ve found someone truly irreplaceable.
 
-
 So here I am, asking you with all my heart: will you be my Valentine? Not just for today, but for every Valentine’s Day to come. I want countless more with you, countless more chances to remind you how much you mean to me.
-
 
 Happy first Valentine’s, baby. I love you so, so much. Always and forever,
 Joshua ❤️`
@@ -468,39 +413,27 @@ Joshua ❤️`
 
       yesBtn.addEventListener('click', acceptScene)
       noBtn.addEventListener('click', acceptScene)
-
       const muteBtn = document.getElementById('muteBtn')
       if(muteBtn) muteBtn.addEventListener('click', toggleMute)
 
-      noBtn.addEventListener('click', ()=>{
-        // playful rejection animation: briefly shake the overlay card then flash a tiny broken heart
-        const card = overlay.querySelector('.card')
-        card.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:420})
-        const bh = document.createElement('div'); bh.className='big-heart'
-        bh.style.opacity = '0.9'
-        bh.innerHTML = `<svg viewBox="0 0 32 29" width="140" height="120"><path d="M23.6 2c-2.5 0-4.6 1.6-5.6 3.2C16 3.6 13.9 2 11.4 2 7 2 4 5 4 9.3c0 8.2 12.6 14.6 12.6 14.6S29.2 17.5 29.2 9.3C29.2 5 26.2 2 23.6 2z" fill="#d0d0d0"/></svg>`
-        document.body.appendChild(bh)
-        setTimeout(()=>{ bh.animate([{opacity:1},{opacity:0}],{duration:900}); setTimeout(()=>bh.remove(),900) },200)
-      })
-
-      // hearts and rings spawning (SVG hearts)
+      // hearts and rings spawning (SVG hearts) — spawn around flower positions
       let id = 1
+      const starsCount = STAR_COUNT
+      const FLOWER_POSITIONS = getFlowerPositions()
+      for(let i=0;i<starsCount;i++){
+        // pre-render a few stars earlier
+      }
       setInterval(()=>{
         const hid = id++
-        // compute current flower positions so layout changes take effect without reload
-        const FLOWER_POSITIONS = getFlowerPositions()
         // pick a flower and apply a small random offset so hearts cluster around blooms
         const base = FLOWER_POSITIONS[Math.floor(Math.random()*FLOWER_POSITIONS.length)]
-        const vw = window.innerWidth || document.documentElement.clientWidth
-        const device = vw <= 420 ? 'phone' : (vw <= 900 ? 'tablet' : 'desktop')
-        const offsetRange = device === 'phone' ? 3 : (device === 'tablet' ? 4 : 5)
-        let left = base + rand(-offsetRange, offsetRange)
-        // compute dynamic clamp band based on flower positions
+        let left = base + rand(isPhone ? -3 : -4, isPhone ? 3 : 4)
+        // compute dynamic clamp band from flower positions
         const minFlower = Math.min.apply(null, FLOWER_POSITIONS)
         const maxFlower = Math.max.apply(null, FLOWER_POSITIONS)
-        const margin = device === 'phone' ? 2 : (device === 'tablet' ? 3 : 4)
-        const clampMin = Math.max(20, minFlower - margin)
-        const clampMax = Math.min(80, maxFlower + margin)
+        const margin = isPhone ? 2 : 3
+        const clampMin = Math.max(22, minFlower - margin)
+        const clampMax = Math.min(78, maxFlower + margin)
         left = Math.max(clampMin, Math.min(clampMax, left))
         const size = Math.round(rand(10,28))
         const hwrap = document.createElement('div')
@@ -524,7 +457,7 @@ Joshua ❤️`
           const r = document.createElement('div')
           r.className = 'ring'
           // place rings near flowers as well (wider vertical variance)
-          let rleft = base + rand(-10,10)
+          let rleft = base + rand(isPhone ? -10 : -10, isPhone ? 10 : 10)
           rleft = Math.max(clampMin, Math.min(clampMax, rleft))
           r.style.left = rleft + '%'
           r.style.bottom = rand(12,38) + '%'

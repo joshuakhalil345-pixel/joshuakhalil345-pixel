@@ -70,18 +70,6 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
 /* Responsive */
 @media (max-width:600px){.flower{width:56px;height:110px}.bloom{width:80px;height:80px}.petal{width:30px;height:40px}}
 
-/* Phone-specific tweaks */
-@media (max-width:420px){
-  .flower{width:48px;height:96px}
-  .bloom{width:72px;height:64px}
-  .big-heart{width:200px;height:200px;top:32%}
-  .letter{width:300px;height:200px}
-  .valentine-overlay .card{padding:18px 20px}
-  .valentine-overlay .card h1{font-size:20px}
-  .valentine-overlay .card div{flex-direction:column}
-  .btn-yes, .btn-ofcourse{padding:10px 16px;width:100%}
-}
-
 /* SVG bloom styling */
 .bloom-svg{width:140px;height:120px;display:block}
 .bloom-svg .svg-p{filter:blur(0.2px);mix-blend-mode:screen}
@@ -105,8 +93,9 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
 .valentine-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto}
 .valentine-overlay .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));padding:28px 36px;border-radius:14px;backdrop-filter:blur(6px);box-shadow:0 10px 40px rgba(0,0,0,0.6);text-align:center;color:#ffdfe9}
 .valentine-overlay h1{margin:0 0 12px;font-size:26px}
-.btn-yes, .btn-ofcourse{background:linear-gradient(180deg,#ff9acb,#ff6ea6);border:0;color:#2b0016;padding:12px 30px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 8px 26px rgba(255,110,166,0.18)}
+  .btn-yes, .btn-ofcourse{background:linear-gradient(180deg,#ff9acb,#ff6ea6);border:0;color:#2b0016;padding:12px 30px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 8px 26px rgba(255,110,166,0.18)}
 
+  /* mute button */
   .mute-btn{position:fixed;top:12px;right:12px;z-index:60;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);color:#ffdfe9;padding:8px 10px;border-radius:10px;cursor:pointer;backdrop-filter:blur(4px)}
 
 /* Flower grown state */
@@ -121,9 +110,9 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
 @keyframes heartPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0.4)}60%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{transform:translate(-50%,-50%) scale(1)}}
 
 /* Letter/envelope */
-.letter{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,520px);max-width:92vw;max-height:calc(100vh - 80px);display:flex;flex-direction:column;align-items:stretch;padding:0 12px;pointer-events:none}
-.letter .envelope{position:relative;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,#2b0f1a,#1b0810);border-radius:10px;transform-origin:top center;animation:envOpen 1s ease forwards;flex:0 0 auto}
-.letter .paper{position:relative;margin:12px 0 12px;background:linear-gradient(180deg,#fff6ea,#fff0d8);border-radius:6px;padding:18px;opacity:0;transform:translateY(12px);transition:all 420ms ease;box-shadow:0 10px 30px rgba(0,0,0,0.24);overflow:auto;flex:1 1 auto;max-height:calc(100% - 132px)}
+.letter{position:fixed;left:50%;top:62%;transform:translate(-50%,-50%);width:360px;height:220px;pointer-events:none}
+.letter .envelope{position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(180deg,#2b0f1a,#1b0810);border-radius:10px;transform-origin:top center;animation:envOpen 1s ease forwards}
+.letter .paper{position:relative;margin:30px 12px 12px;background:linear-gradient(180deg,#fff6ea,#fff0d8);border-radius:6px;padding:18px;opacity:0;transform:translateY(12px);transition:all 420ms ease;box-shadow:0 10px 30px rgba(0,0,0,0.24);max-height:calc(100vh - 240px);overflow:auto}
 .scene.accepted .letter .paper{opacity:1;transform:translateY(0)}
 @keyframes envOpen{0%{transform:rotateX(0deg)}50%{transform:rotateX(-90deg)}100%{transform:rotateX(-180deg);opacity:0}}
 
@@ -182,7 +171,6 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
       // file-based background audio (preferred) + WebAudio fallback
       const BG_FILE = 'videos/ariana-grande-tattooed-heart-live-from-london.mp3'
       let bgAudio = null
-      let isMuted = false
       function startFileMusic(){
         if(bgAudio) return
         try{
@@ -192,10 +180,7 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
           if(isMuted) bgAudio.muted = true
           const p = bgAudio.play()
           if(p && typeof p.catch === 'function'){
-            p.catch(()=>{
-              bgAudio = null
-              startMusic()
-            })
+            p.catch(()=>{ bgAudio = null; startMusic() })
           }
         }catch(e){ bgAudio = null; startMusic() }
       }
@@ -216,10 +201,10 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
         oscA.connect(gA); oscB.connect(gB);
         gA.connect(filter); gB.connect(filter); filter.connect(master)
         oscA.start(); oscB.start()
+        // if muted, keep master very quiet; otherwise ramp up
         if(isMuted) master.gain.setValueAtTime(0.0001, ctx.currentTime)
         else master.gain.exponentialRampToValueAtTime(0.55, ctx.currentTime+0.6)
 
-        // gentle bell notes
         function playBell(){
           const o = ctx.createOscillator(); o.type='triangle'; const gg = ctx.createGain();
           const freqs = [440,554.37,659.25]
@@ -241,6 +226,7 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
       }
 
       // mute control
+      let isMuted = false
       function applyMuteState(){
         const btn = document.getElementById('muteBtn')
         try{ if(bgAudio) bgAudio.muted = isMuted }catch(e){}
@@ -314,21 +300,13 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
       fieldEl.appendChild(flowerDOM(60,0.94,-0.16))
       fieldEl.appendChild(flowerDOM(74,0.88,0.22))
 
-      // extra floating big heart styles (for acceptance burst)
-      const extraHeartStyle = document.createElement('style')
-      extraHeartStyle.textContent = `
-        .big-floating{position:absolute;pointer-events:none;transform:rotate(-25deg);border-radius:20px 20px 0 0;box-shadow:0 18px 48px rgba(255,80,140,0.18);background:linear-gradient(180deg,#ff9acb,#ff4b9a);animation:floatUpBig linear forwards;will-change:transform,opacity}
-        @keyframes floatUpBig{0%{transform:translateY(0) rotate(-25deg);opacity:1}60%{transform:translateY(-140px) rotate(-25deg) scale(1.03)}100%{transform:translateY(-360px) rotate(-25deg);opacity:0}}
-      `
-      document.head.appendChild(extraHeartStyle)
-
       // overlay actions
       const overlay = document.getElementById('valOverlay')
       const yesBtn = document.getElementById('yesBtn')
       const noBtn = document.getElementById('noBtn')
 
       function acceptScene(){
-        // start background music on acceptance (try file first, fallback to WebAudio)
+        // start background music on acceptance (try file first)
         try{ startFileMusic() }catch(e){ try{ startMusic() }catch(e){} }
         // hide overlay
         overlay.style.display = 'none'
@@ -346,25 +324,23 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
           const f = flowerDOM(pos, scale, 0.1*i)
           fieldEl.appendChild(f)
           // stagger the growth so they rise visually like existing flowers
-          setTimeout(()=>{
-            f.classList.add('grown')
-          }, 120 + i * 80)
+          setTimeout(()=>{ f.classList.add('grown') }, 120 + i * 80)
         })
 
         // spawn a burst of extra hearts near the blooms
         function spawnExtraHearts(count){
-            const FLOWER_POSITIONS = getFlowerPositions().concat([30,50,66])
+          const FLOWER_POSITIONS = getFlowerPositions().concat([30,50,66])
           for(let j=0;j<count;j++){
             const hid = 'x' + Date.now() + Math.random()
             const base = FLOWER_POSITIONS[Math.floor(Math.random()*FLOWER_POSITIONS.length)]
-            const vw = window.innerWidth || document.documentElement.clientWidth
-            const device = vw <= 420 ? 'phone' : (vw <= 900 ? 'tablet' : 'desktop')
-            const offsetRange = device === 'phone' ? 5 : (device === 'tablet' ? 6 : 8)
-            let left = base + rand(-offsetRange, offsetRange)
+              const vw = window.innerWidth || document.documentElement.clientWidth
+              const device = vw <= 420 ? 'phone' : (vw <= 900 ? 'tablet' : 'desktop')
+              const offsetRange = device === 'phone' ? 3 : (device === 'tablet' ? 4 : 5)
+              let left = base + rand(-offsetRange, offsetRange)
             // clamp to a central visible band computed from flower positions
-            const minFlower = Math.min.apply(null, getFlowerPositions())
-            const maxFlower = Math.max.apply(null, getFlowerPositions())
-            const margin = device === 'phone' ? 3 : (device === 'tablet' ? 5 : 6)
+            const minFlower = Math.min.apply(null, FLOWER_POSITIONS)
+            const maxFlower = Math.max.apply(null, FLOWER_POSITIONS)
+            const margin = device === 'phone' ? 2 : (device === 'tablet' ? 3 : 4)
             const clampMin = Math.max(20, minFlower - margin)
             const clampMax = Math.min(80, maxFlower + margin)
             left = Math.max(clampMin, Math.min(clampMax, left))
@@ -388,7 +364,7 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
               const bw = Math.round(rand(72,120))
               const _vw = window.innerWidth || document.documentElement.clientWidth
               const _device = _vw <= 420 ? 'phone' : (_vw <= 900 ? 'tablet' : 'desktop')
-              const bhOffset = _device === 'phone' ? 8 : (_device === 'tablet' ? 10 : 12)
+              const bhOffset = _device === 'phone' ? 6 : (_device === 'tablet' ? 8 : 10)
               let bhLeft = base + rand(-bhOffset, bhOffset)
               bhLeft = Math.max(clampMin, Math.min(clampMax, bhLeft))
               bh.style.left = bhLeft + '%'
@@ -429,28 +405,28 @@ body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #050412 100%);font
           paper.innerHTML = '<h2>BABA</h2><p id="typed">&nbsp;</p>'
           letter.appendChild(env); letter.appendChild(paper); scene.appendChild(letter)
           // typed effect
-          const text = `From the time I fell for you, I never stopped falling deeper and deeper. I love you so deeply, Yan, and I always will. We’ve made so many memories together, shared so many parts of ourselves, and every single one of those moments has only made me more certain that you’re the one I want to spend my life with.
+          const text = `From the time I fell for you, I never stopped falling deeper and deeper. I love you so deeply, Yan, and I always will. We’ve made so many memories together, shared so many parts of ourselves, and every single one of those moments has only made me more certain that you’re the one I want to spend my life with.  
 
-I want us to grow with each other, to walk side by side through every step of life. I want to build my future with you, Yan, because when I look ahead, I see you in it—your smile, your laughter, your love. You’re not just part of my dreams, you are my dream.
+I want us to grow with each other, to walk side by side through every step of life. I want to build my future with you, Yan, because when I look ahead, I see you in it—your smile, your laughter, your love. You’re not just part of my dreams, you are my dream.  
 
+You’ve shown me what it means to love and be loved, and I can’t imagine a day without you. You are my safe place, my happiness, and my greatest blessing. Every time I call you Baba, every time I hold you close, I’m reminded that I’ve found someone truly irreplaceable.  
 
-You’ve shown me what it means to love and be loved, and I can’t imagine a day without you. You are my safe place, my happiness, and my greatest blessing. Every time I call you Baba, every time I hold you close, I’m reminded that I’ve found someone truly irreplaceable.
+So here I am, asking you with all my heart: will you be my Valentine? Not just for today, but for every Valentine’s Day to come. I want countless more with you, countless more chances to remind you how much you mean to me.  
 
-
-So here I am, asking you with all my heart: will you be my Valentine? Not just for today, but for every Valentine’s Day to come. I want countless more with you, countless more chances to remind you how much you mean to me.
-
-
-Happy first Valentine’s, baby. I love you so, so much. Always and forever,
+Happy first Valentine’s, baby. I love you so, so much. Always and forever,  
 Joshua ❤️`
+          // helper: keep big-heart positioned so it's visible above the paper
           function updateBigHeartPosition(){
             const bh = document.querySelector('.big-heart')
             const paperEl = document.querySelector('.letter .paper')
             if(!bh || !paperEl) return
             const paperRect = paperEl.getBoundingClientRect()
             const bhRect = bh.getBoundingClientRect()
+            // place the heart above the paper, with a small margin; ensure it doesn't go too high
             const desiredTop = Math.max(window.innerHeight * 0.08, paperRect.top - (bhRect.height * 0.55))
             bh.style.top = desiredTop + 'px'
           }
+          // call initially and on resize
           updateBigHeartPosition()
           const _rh = ()=> updateBigHeartPosition()
           window.addEventListener('resize', _rh)
@@ -468,37 +444,25 @@ Joshua ❤️`
 
       yesBtn.addEventListener('click', acceptScene)
       noBtn.addEventListener('click', acceptScene)
-
       const muteBtn = document.getElementById('muteBtn')
       if(muteBtn) muteBtn.addEventListener('click', toggleMute)
 
-      noBtn.addEventListener('click', ()=>{
-        // playful rejection animation: briefly shake the overlay card then flash a tiny broken heart
-        const card = overlay.querySelector('.card')
-        card.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:420})
-        const bh = document.createElement('div'); bh.className='big-heart'
-        bh.style.opacity = '0.9'
-        bh.innerHTML = `<svg viewBox="0 0 32 29" width="140" height="120"><path d="M23.6 2c-2.5 0-4.6 1.6-5.6 3.2C16 3.6 13.9 2 11.4 2 7 2 4 5 4 9.3c0 8.2 12.6 14.6 12.6 14.6S29.2 17.5 29.2 9.3C29.2 5 26.2 2 23.6 2z" fill="#d0d0d0"/></svg>`
-        document.body.appendChild(bh)
-        setTimeout(()=>{ bh.animate([{opacity:1},{opacity:0}],{duration:900}); setTimeout(()=>bh.remove(),900) },200)
-      })
-
-      // hearts and rings spawning (SVG hearts)
+      // hearts and rings spawning (SVG hearts) — spawn around flower positions
       let id = 1
       setInterval(()=>{
         const hid = id++
-        // compute current flower positions so layout changes take effect without reload
+        // compute current flower positions and pick a flower so layout changes take effect
         const FLOWER_POSITIONS = getFlowerPositions()
         // pick a flower and apply a small random offset so hearts cluster around blooms
         const base = FLOWER_POSITIONS[Math.floor(Math.random()*FLOWER_POSITIONS.length)]
         const vw = window.innerWidth || document.documentElement.clientWidth
         const device = vw <= 420 ? 'phone' : (vw <= 900 ? 'tablet' : 'desktop')
-        const offsetRange = device === 'phone' ? 3 : (device === 'tablet' ? 4 : 5)
+        const offsetRange = device === 'phone' ? 5 : (device === 'tablet' ? 6 : 7)
         let left = base + rand(-offsetRange, offsetRange)
-        // compute dynamic clamp band based on flower positions
+        // compute a dynamic clamp band around the flower positions so hearts don't end up at extreme edges
         const minFlower = Math.min.apply(null, FLOWER_POSITIONS)
         const maxFlower = Math.max.apply(null, FLOWER_POSITIONS)
-        const margin = device === 'phone' ? 2 : (device === 'tablet' ? 3 : 4)
+        const margin = device === 'phone' ? 3 : (device === 'tablet' ? 5 : 6)
         const clampMin = Math.max(20, minFlower - margin)
         const clampMax = Math.min(80, maxFlower + margin)
         left = Math.max(clampMin, Math.min(clampMax, left))
@@ -524,7 +488,8 @@ Joshua ❤️`
           const r = document.createElement('div')
           r.className = 'ring'
           // place rings near flowers as well (wider vertical variance)
-          let rleft = base + rand(-10,10)
+          const rOffset = device === 'phone' ? 8 : (device === 'tablet' ? 10 : 12)
+          let rleft = base + rand(-rOffset, rOffset)
           rleft = Math.max(clampMin, Math.min(clampMax, rleft))
           r.style.left = rleft + '%'
           r.style.bottom = rand(12,38) + '%'
